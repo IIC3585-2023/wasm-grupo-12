@@ -5,28 +5,12 @@
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>WASM</title>
+  <script src="js/index.js"></script>
+  <script async type="text/javascript" src="js/main.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
-<script>
-  let n = 0;
-  function addInput() {
-    let label = document.createElement('label');
-    label.className = 'label';
-    label.innerHTML = 'Time job ' + n;
-    let input = document.createElement('input');
-    input.className = 'input';
-    input.type = 'number';
-    input.name = 'job' + n;
-    input.required = true;
-    document.getElementById('time').appendChild(label);
-    document.getElementById('time').appendChild(input);
-    n = n + 1;
-  };
-
-</script>
 
 <body>
-  {{{ SCRIPT }}}
   <div class="container">
     <form id="form" class="form">
       <label for="clusters" class="label">CLUSTERS</label>
@@ -64,7 +48,6 @@
       </div>
     </div>
 
-
     <div class="card" id="js">
       <div class="header">Solución en c</div>
       <div class="body">
@@ -90,7 +73,6 @@
         </div>
       </div>
     </div>
-
 
   </div>
 </body>
