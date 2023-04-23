@@ -9,6 +9,14 @@ int main()
     return 0;
 }
 
+
+void assignJobs() {}
+
+
+
+
+
+
 // EMSCRIPTEN_KEEPALIVE adds functions to the exported functions list
 EMSCRIPTEN_KEEPALIVE void myFunction()
 {

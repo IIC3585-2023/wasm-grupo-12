@@ -5,8 +5,6 @@
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>WASM</title>
-  <script src="js/index.js"></script>
-  <script async type="text/javascript" src="js/main.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -17,7 +15,7 @@
       <input type="number" id="clusters" name="clusters" required="true" class="input">
       <div id="time"> </div>
       <button class="button" type="button" onclick="addInput()"> <span>+ Add Job</span></button>
-      <button class="button" type="button" onclick="Module.ccall('myFunction', null, null, null);"><span>► Test</span></button>
+      <button class="button" type="button" id="test"><span>► Test</span></button>
     </form>
   </div>
 
@@ -76,5 +74,8 @@
 
   </div>
 </body>
+
+<script src="js/index.js"></script>
+<script async type="text/javascript" src="js/main.js"></script>
 
 </html>
