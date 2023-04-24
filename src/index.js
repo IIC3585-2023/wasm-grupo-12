@@ -38,7 +38,7 @@ const jsSolution = (N, M, times) => {
   };
 
 
-  let N, M, i, j, k;
+  // let N, M, i, j, k;
   let sum = Array.from({length: MAX_M}, (v, i) => 0);
 
   console.log(sum.length);
@@ -92,14 +92,14 @@ Module.onRuntimeInitialized = () => {
     Module.HEAPU32.set(jobs, jobsPtr >> 2)
 
     // Allocate memory for the array of elements
-    const elements = Module._malloc(jobs.length * 4);
+    const elements = Module._malloc(jobs.byteLength);
     for (let i = 0; i < jobs.length; i++) {
       elements[i] = Module._malloc(2 * 4);
     }
 
     Module.ccall('assignJobs', null, 
-                ['number', 'number', 'number', 'number'], 
-                [nClusters, jobs.length, jobsPtr, elements]);
+                ['number', 'number', 'number'], 
+                [nClusters, jobs.length, jobsPtr]);
 
     
     const elementsArray = new Int32Array(Module.HEAPU32.buffer, elements, jobs.length);

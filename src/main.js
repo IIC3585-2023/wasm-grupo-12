@@ -1005,7 +1005,7 @@ function dbg(text) {
 // === Body ===
 
 var ASM_CONSTS = {
-  66248: ($0) => { document.getElementById('duracion-c').innerHTML = $0; document.getElementById('loader-duracion-c').style.display = 'none'; }
+  66376: ($0) => { document.getElementById('duracion-c').innerHTML = $0; document.getElementById('loader-duracion-c').style.display = 'none'; }
 };
 
 
