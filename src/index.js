@@ -111,21 +111,21 @@ Module.onRuntimeInitialized = () => {
     Module._free(jobsPtr);
 
     /* JS implementation */
-    let jsStart = Date.now();
+    let jsStart = new Date();
     const res = jsSolution(nClusters, jobs.length, jobs)
-    let jsEnd = Date.now();
+    let jsEnd = new Date();
     let duracion = (jsEnd - jsStart)/1000;
-    console.log("Total time taken : " + duracion + " s");
+    console.log("Total time taken : " + duracion);
 
     // poner tiempos en vista
     document.getElementById('loader-inicio-js').style.display = 'none';
     let inicio_p = document.createElement('p');
-    inicio_p.innerHTML = `${jsStart}`;
+    inicio_p.innerHTML = `${jsStart.toLocaleTimeString()}`;
     document.getElementById('inicio-js').appendChild(inicio_p);
 
     document.getElementById('loader-fin-js').style.display = 'none';
     let fin_p = document.createElement('p');
-    fin_p.innerHTML = `${jsEnd}`;
+    fin_p.innerHTML = `${jsEnd.toLocaleTimeString() }`;
     document.getElementById('fin-js').appendChild(fin_p);
 
     document.getElementById('loader-duracion-js').style.display = 'none';
