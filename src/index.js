@@ -33,22 +33,11 @@ const jsSolution = (N, M, times) => {
     for (var i = 1; i < array.length; i++) {
       array[i][1] < pivot[1] ? left.push(array[i]) : right.push(array[i]);
     }
-    // return quicksort(left).concat(pivot, quicksort(right));
     return [...quicksort(left), pivot, ...quicksort(right)]
   };
 
-
   let sum = Array.from({length: MAX_M}, (v, i) => 0);
-
-  console.log(sum.length);
-
-  // obtener input N y M
-  // N = 5
-  // M = 2
-  // // obtener tiempos
-  // const times = [30, 50, 10, 20, 90]
   let elements = Array.from({length: N}, (v, i) => [0, 0]);
-  console.log(elements);
 
   for (let i = 0; i < N; i++) {
     elements[i][0] = times[i];
@@ -71,7 +60,6 @@ const jsSolution = (N, M, times) => {
   }
 
   // Print the group of each element
-  console.log(elements.map((element => element[0])));
   const res = elements.map((element => element[0]));
   return res;
 }
