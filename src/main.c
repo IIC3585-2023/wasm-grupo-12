@@ -17,6 +17,7 @@ int compareNumbers(const void* a, const void* b) {
 }
 
 void assignJobs(int nClusters, int nJobs, int* jobs, int** elements) {
+  double inicio = clock();
   printf("1\n");
   // Input the time of each element and store it in the array
   for (int i = 0; i < nJobs; i++) {
@@ -27,7 +28,9 @@ void assignJobs(int nClusters, int nJobs, int* jobs, int** elements) {
   
 
   // Sort the array of elements in non-decreasing order of time
+  printf("%p\n", elements);
   qsort(elements, nJobs, sizeof(int*), compareNumbers);
+  printf("%p\n", elements);
 
   // Assign each element to the group with the smallest sum
   int sum[nClusters];
@@ -58,39 +61,10 @@ void assignJobs(int nClusters, int nJobs, int* jobs, int** elements) {
   //   free(elements[i]);
   // }
   // free(elements);
-}
+  double fin = clock();
 
-
-
-
-
-
-// EMSCRIPTEN_KEEPALIVE adds functions to the exported functions list
-EMSCRIPTEN_KEEPALIVE void myFunction()
-{
-
-    printf("MyFunction Called\n");
-    // EM_JS is used to declare JavaScript functions from inside a C file.
-    EM_ASM(
-
-        document.getElementById('inicio-c').innerHTML = new Date().toLocaleTimeString();
-        document.getElementById('loader-inicio-c').style.display = 'none';);
-
-    double inicio = clock();
-    /*// Solucion al problema en c
-
-    
-
-     // */
-    double fin = clock();
-
-    // EM_JS is used to declare JavaScript functions from inside a C file.
-    // Can also send values from C into JavaScript inside EM_ASM
-    EM_ASM(
-        {document.getElementById('loader-fin-c').style.display = 'none';
-        document.getElementById('fin-c').innerHTML = new Date().toLocaleTimeString(); 
+  EM_ASM(
+        {document.getElementById('duracion-c').innerHTML = $0;
         document.getElementById('loader-duracion-c').style.display = 'none';
-        document.getElementById('duracion-c').innerHTML = $0; 
         }, (fin - inicio) / CLOCKS_PER_SEC);
-
 }

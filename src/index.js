@@ -15,6 +15,8 @@ function addInput() {
   n = n + 1;
 };
 
+const assignMemory = () => {}
+
 Module.onRuntimeInitialized = () => {
   document.getElementById('test').onclick = () => {
     console.log('test pressed');
@@ -23,6 +25,9 @@ Module.onRuntimeInitialized = () => {
 
     const jobs = Array.from(document.getElementsByName('job')).map(element => parseInt(element.value));
     console.log(`Jobs: ${jobs}`);
+
+    document.getElementById('inicio-c').innerHTML = new Date().toLocaleTimeString();
+    document.getElementById('loader-inicio-c').style.display = 'none';
 
     const jobsPtr = Module._malloc(jobs.byteLength);
     Module.HEAPU32.set(jobs, jobsPtr >> 2)
@@ -33,14 +38,17 @@ Module.onRuntimeInitialized = () => {
       elements[i] = Module._malloc(2 * 4);
     }
 
-    const result = Module.ccall('assignJobs', null, 
-                    ['number', 'number', 'number', 'number'], 
-                    [nClusters, jobs.length, jobsPtr, elements]);
+    Module.ccall('assignJobs', null, 
+                ['number', 'number', 'number', 'number'], 
+                [nClusters, jobs.length, jobsPtr, elements]);
 
     
     const elementsArray = new Int32Array(Module.HEAPU32.buffer, elements, jobs.length);
 
     console.log(`elementsArray: ${elementsArray}`);
+
+    document.getElementById('fin-c').innerHTML = new Date().toLocaleTimeString(); 
+    document.getElementById('loader-fin-c').style.display = 'none';
 
     Module._free(jobsPtr);
   };

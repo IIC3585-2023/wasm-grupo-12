@@ -1005,8 +1005,7 @@ function dbg(text) {
 // === Body ===
 
 var ASM_CONSTS = {
-  66264: () => { document.getElementById('inicio-c').innerHTML = new Date().toLocaleTimeString(); document.getElementById('loader-inicio-c').style.display = 'none'; },  
- 66412: ($0) => { document.getElementById('loader-fin-c').style.display = 'none'; document.getElementById('fin-c').innerHTML = new Date().toLocaleTimeString(); document.getElementById('loader-duracion-c').style.display = 'none'; document.getElementById('duracion-c').innerHTML = $0; }
+  66248: ($0) => { document.getElementById('duracion-c').innerHTML = $0; document.getElementById('loader-duracion-c').style.display = 'none'; }
 };
 
 
@@ -1421,8 +1420,6 @@ var asm = createWasm();
 var ___wasm_call_ctors = createExportWrapper("__wasm_call_ctors");
 /** @type {function(...*):?} */
 var _assignJobs = Module["_assignJobs"] = createExportWrapper("assignJobs");
-/** @type {function(...*):?} */
-var _myFunction = Module["_myFunction"] = createExportWrapper("myFunction");
 /** @type {function(...*):?} */
 var ___errno_location = createExportWrapper("__errno_location");
 /** @type {function(...*):?} */
