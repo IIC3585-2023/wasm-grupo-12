@@ -38,7 +38,6 @@ const jsSolution = (N, M, times) => {
   };
 
 
-  let N, M, i, j, k;
   let sum = Array.from({length: MAX_M}, (v, i) => 0);
 
   console.log(sum.length);
@@ -113,23 +112,32 @@ Module.onRuntimeInitialized = () => {
 
     /* JS implementation */
     let jsStart = Date.now();
-    const res = jsSolution(nClusters, listArray.length, listArray)
+    const res = jsSolution(nClusters, jobs.length, jobs)
     let jsEnd = Date.now();
-    let duracion = jsEnd - jsStart
-    console.log("Total time taken : " + duracion + " milliseconds");
+    let duracion = (jsEnd - jsStart)/1000;
+    console.log("Total time taken : " + duracion + " s");
+
     // poner tiempos en vista
+    document.getElementById('loader-inicio-js').style.display = 'none';
     let inicio_p = document.createElement('p');
     inicio_p.innerHTML = `${jsStart}`;
     document.getElementById('inicio-js').appendChild(inicio_p);
+
+    document.getElementById('loader-fin-js').style.display = 'none';
     let fin_p = document.createElement('p');
     fin_p.innerHTML = `${jsEnd}`;
-    document.getElementById('duracion-js').appendChild(fin_p);
+    document.getElementById('fin-js').appendChild(fin_p);
+
+    document.getElementById('loader-duracion-js').style.display = 'none';
     let duracion_p = document.createElement('p');
-    duracion_p.innerHTML = `${duracion}`;
+    duracion_p.innerHTML = `${duracion} s`;
     document.getElementById('duracion-js').appendChild(duracion_p);
+
     // poner solucion
+    document.getElementById('loader-solucion-js').style.display = 'none';
     let solucion_p = document.createElement('p');
-    solucion_p.innerHTML = `${res}`;
+    solucion_p.innerHTML = `[T_i, ...] = [${res}]`;
+    console.log('solucion', res);
     document.getElementById('solucion-js').appendChild(solucion_p);
   };
 };
