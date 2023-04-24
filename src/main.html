@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>WASM</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <form id="form" class="form">
+      <label for="clusters" class="label">CLUSTERS</label>
+      <input type="number" id="clusters" name="clusters" required="true" class="input">
+      <div id="time"> </div>
+      <button class="button" type="button" onclick="addInput()"> <span>+ Add Job</span></button>
+      <button class="button" type="button" id="test"><span>► Test</span></button>
+    </form>
+  </div>
+
+  <div class="container">
+    <div class="card" id="c">
+      <div class="header">Solución en js</div>
+      <div class="body">
+        <div class="skill">
+          <div class="skill-name">Inicio</div>
+          <div class="loader" id="loader-inicio-js"></div>
+          <div class="skill-percent-number" id="inicio-js"></div>
+        </div>
+        <div class="skill">
+          <div class="skill-name">Fin</div>
+          <div class="loader" id="loader-fin-js"></div>
+          <div class="skill-percent-number" id="fin-js"></div>
+        </div>
+        <div class="skill">
+          <div class="skill-name">Duración</div>
+          <div class="loader" id="loader-duracion-js"></div>
+          <div class="skill-percent-number" id="duracion-js"></div>
+        </div>
+        <div class="skill">
+          <div class="skill-name">Solución</div>
+          <div class="loader" id="loader-solucion-js"></div>
+          <div class="skill-percent-number" id="solucion-js"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="js">
+      <div class="header">Solución en c</div>
+      <div class="body">
+        <div class="skill">
+          <div class="skill-name">Inicio</div>
+          <div class="loader" id="loader-inicio-c"></div>
+          <div class="skill-percent-number" id="inicio-c"></div>
+        </div>
+        <div class="skill">
+          <div class="skill-name" >Fin</div>
+          <div class="loader" id="loader-fin-c"></div>
+          <div class="skill-percent-number" id="fin-c"></div>
+        </div>
+        <div class="skill">
+          <div class="skill-name">Duración</div>
+          <div class="loader" id="loader-duracion-c"></div>
+          <div class="skill-percent-number" id="duracion-c"></div>
+        </div>
+        <div class="skill">
+          <div class="skill-name">Solución</div>
+          <div class="loader" id="loader-solucion-c"></div>
+          <div class="skill-percent-number" id="solucion-c"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+
+<script src="main.js" defer></script>
+<script src="index.js" defer></script>
+
+</html>
+
+
