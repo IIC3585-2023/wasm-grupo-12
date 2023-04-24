@@ -375,13 +375,6 @@ function assert(condition, text) {
 
 // We used to include malloc/free by default in the past. Show a helpful error in
 // builds with assertions.
-function _malloc() {
-  abort("malloc() called but not included in the build - add '_malloc' to EXPORTED_FUNCTIONS");
-}
-function _free() {
-  // Show a helpful error since we used to include free by default in the past.
-  abort("free() called but not included in the build - add '_free' to EXPORTED_FUNCTIONS");
-}
 
 // Memory management
 
@@ -482,7 +475,6 @@ function checkStackCookie() {
 // end include: runtime_assertions.js
 var __ATPRERUN__  = []; // functions called before the runtime is initialized
 var __ATINIT__    = []; // functions called during startup
-var __ATMAIN__    = []; // functions called when main() is to be run
 var __ATEXIT__    = []; // functions called during shutdown
 var __ATPOSTRUN__ = []; // functions called after the main() is called
 
@@ -514,12 +506,6 @@ function initRuntime() {
   callRuntimeCallbacks(__ATINIT__);
 }
 
-function preMain() {
-  checkStackCookie();
-  
-  callRuntimeCallbacks(__ATMAIN__);
-}
-
 function postRun() {
   checkStackCookie();
 
@@ -539,10 +525,6 @@ function addOnPreRun(cb) {
 
 function addOnInit(cb) {
   __ATINIT__.unshift(cb);
-}
-
-function addOnPreMain(cb) {
-  __ATMAIN__.unshift(cb);
 }
 
 function addOnExit(cb) {
@@ -1023,8 +1005,8 @@ function dbg(text) {
 // === Body ===
 
 var ASM_CONSTS = {
-  66260: () => { const listArray = [... document.getElementsByClassName('input')]; const nClusters = listArray.shift(); listArray.forEach((item) => {console.log(item.value)}); document.getElementById('inicio-c').innerHTML = new Date().toLocaleTimeString(); document.getElementById('loader-inicio-c').style.display = 'none'; },  
- 66567: ($0) => { document.getElementById('loader-fin-c').style.display = 'none'; document.getElementById('fin-c').innerHTML = new Date().toLocaleTimeString(); document.getElementById('loader-duracion-c').style.display = 'none'; document.getElementById('duracion-c').innerHTML = $0; }
+  66264: () => { document.getElementById('inicio-c').innerHTML = new Date().toLocaleTimeString(); document.getElementById('loader-inicio-c').style.display = 'none'; },  
+ 66412: ($0) => { document.getElementById('loader-fin-c').style.display = 'none'; document.getElementById('fin-c').innerHTML = new Date().toLocaleTimeString(); document.getElementById('loader-duracion-c').style.display = 'none'; document.getElementById('duracion-c').innerHTML = $0; }
 };
 
 
@@ -1141,6 +1123,19 @@ var ASM_CONSTS = {
 
   function _emscripten_memcpy_big(dest, src, num) {
       HEAPU8.copyWithin(dest, src, src + num);
+    }
+
+  function getHeapMax() {
+      return HEAPU8.length;
+    }
+  
+  function abortOnCannotGrowMemory(requestedSize) {
+      abort('Cannot enlarge memory arrays to size ' + requestedSize + ' bytes (OOM). Either (1) compile with -sINITIAL_MEMORY=X with X higher than the current value ' + HEAP8.length + ', (2) compile with -sALLOW_MEMORY_GROWTH which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with -sABORTING_MALLOC=0');
+    }
+  function _emscripten_resize_heap(requestedSize) {
+      var oldSize = HEAPU8.length;
+      requestedSize = requestedSize >>> 0;
+      abortOnCannotGrowMemory(requestedSize);
     }
 
   var printCharBuffers = [null,[],[]];
@@ -1261,48 +1256,6 @@ var ASM_CONSTS = {
       }
       HEAPU32[((pnum)>>2)] = num;
       return 0;
-    }
-
-  
-  function _proc_exit(code) {
-      EXITSTATUS = code;
-      if (!keepRuntimeAlive()) {
-        if (Module['onExit']) Module['onExit'](code);
-        ABORT = true;
-      }
-      quit_(code, new ExitStatus(code));
-    }
-  /** @param {boolean|number=} implicit */
-  function exitJS(status, implicit) {
-      EXITSTATUS = status;
-  
-      checkUnflushedContent();
-  
-      // if exit() was called explicitly, warn the user if the runtime isn't actually being shut down
-      if (keepRuntimeAlive() && !implicit) {
-        var msg = 'program exited (with status: ' + status + '), but keepRuntimeAlive() is set (counter=' + runtimeKeepaliveCounter + ') due to an async operation, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)';
-        err(msg);
-      }
-  
-      _proc_exit(status);
-    }
-
-  function handleException(e) {
-      // Certain exception types we do not treat as errors since they are used for
-      // internal control flow.
-      // 1. ExitStatus, which is thrown by exit()
-      // 2. "unwind", which is thrown by emscripten_unwind_to_js_event_loop() and others
-      //    that wish to return to JS event loop.
-      if (e instanceof ExitStatus || e == 'unwind') {
-        return EXITSTATUS;
-      }
-      checkStackCookie();
-      if (e instanceof WebAssembly.RuntimeError) {
-        if (_emscripten_stack_get_current() <= 0) {
-          err('Stack overflow detected.  You can try increasing -sSTACK_SIZE (currently set to ' + 65536 + ')');
-        }
-      }
-      quit_(1, e);
     }
 
   function getCFunc(ident) {
@@ -1460,19 +1413,24 @@ var wasmImports = {
   "emscripten_asm_const_int": _emscripten_asm_const_int,
   "emscripten_date_now": _emscripten_date_now,
   "emscripten_memcpy_big": _emscripten_memcpy_big,
+  "emscripten_resize_heap": _emscripten_resize_heap,
   "fd_write": _fd_write
 };
 var asm = createWasm();
 /** @type {function(...*):?} */
 var ___wasm_call_ctors = createExportWrapper("__wasm_call_ctors");
 /** @type {function(...*):?} */
-var _myFunction = Module["_myFunction"] = createExportWrapper("myFunction");
+var _assignJobs = Module["_assignJobs"] = createExportWrapper("assignJobs");
 /** @type {function(...*):?} */
-var _main = Module["_main"] = createExportWrapper("main");
+var _myFunction = Module["_myFunction"] = createExportWrapper("myFunction");
 /** @type {function(...*):?} */
 var ___errno_location = createExportWrapper("__errno_location");
 /** @type {function(...*):?} */
 var _fflush = Module["_fflush"] = createExportWrapper("fflush");
+/** @type {function(...*):?} */
+var _malloc = Module["_malloc"] = createExportWrapper("malloc");
+/** @type {function(...*):?} */
+var _free = Module["_free"] = createExportWrapper("free");
 /** @type {function(...*):?} */
 var _emscripten_stack_init = function() {
   return (_emscripten_stack_init = Module["asm"]["emscripten_stack_init"]).apply(null, arguments);
@@ -1514,8 +1472,7 @@ var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
 Module["ccall"] = ccall;
 var missingLibrarySymbols = [
   'zeroMemory',
-  'getHeapMax',
-  'abortOnCannotGrowMemory',
+  'exitJS',
   'emscripten_realloc_buffer',
   'isLeapYear',
   'ydayFromDate',
@@ -1544,6 +1501,7 @@ var missingLibrarySymbols = [
   'dynCallLegacy',
   'getDynCaller',
   'dynCall',
+  'handleException',
   'runtimeKeepalivePush',
   'runtimeKeepalivePop',
   'callUserCallback',
@@ -1721,7 +1679,8 @@ var unexportedSymbols = [
   'writeStackCookie',
   'checkStackCookie',
   'ptrToString',
-  'exitJS',
+  'getHeapMax',
+  'abortOnCannotGrowMemory',
   'ENV',
   'MONTH_DAYS_REGULAR',
   'MONTH_DAYS_LEAP',
@@ -1738,7 +1697,6 @@ var unexportedSymbols = [
   'readEmAsmArgsArray',
   'readEmAsmArgs',
   'runEmAsmFunction',
-  'handleException',
   'getCFunc',
   'freeTableIndexes',
   'functionsInTableMap',
@@ -1802,28 +1760,6 @@ dependenciesFulfilled = function runCaller() {
   if (!calledRun) dependenciesFulfilled = runCaller; // try this again later, after new deps are fulfilled
 };
 
-function callMain() {
-  assert(runDependencies == 0, 'cannot call main when async dependencies remain! (listen on Module["onRuntimeInitialized"])');
-  assert(__ATPRERUN__.length == 0, 'cannot call main when preRun functions remain to be called');
-
-  var entryFunction = _main;
-
-  var argc = 0;
-  var argv = 0;
-
-  try {
-
-    var ret = entryFunction(argc, argv);
-
-    // if we're not running an evented main loop, it's time to exit
-    exitJS(ret, /* implicit = */ true);
-    return ret;
-  }
-  catch (e) {
-    return handleException(e);
-  }
-}
-
 function stackCheckInit() {
   // This is normally called automatically during __wasm_call_ctors but need to
   // get these values before even running any of the ctors so we call it redundantly
@@ -1859,11 +1795,9 @@ function run() {
 
     initRuntime();
 
-    preMain();
-
     if (Module['onRuntimeInitialized']) Module['onRuntimeInitialized']();
 
-    if (shouldRunNow) callMain();
+    assert(!Module['_main'], 'compiled without a main, but one is present. if you added it from JS, use Module["onRuntimeInitialized"]');
 
     postRun();
   }
@@ -1918,11 +1852,6 @@ if (Module['preInit']) {
     Module['preInit'].pop()();
   }
 }
-
-// shouldRunNow refers to calling main(), not run().
-var shouldRunNow = true;
-
-if (Module['noInitialRun']) shouldRunNow = false;
 
 run();
 
