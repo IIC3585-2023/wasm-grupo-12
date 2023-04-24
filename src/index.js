@@ -33,8 +33,10 @@ const jsSolution = (N, M, times) => {
     for (var i = 1; i < array.length; i++) {
       array[i][1] < pivot[1] ? left.push(array[i]) : right.push(array[i]);
     }
+
     return [...quicksort(left), pivot, ...quicksort(right)]
   };
+
 
   let sum = Array.from({length: MAX_M}, (v, i) => 0);
   let elements = Array.from({length: N}, (v, i) => [0, 0]);
@@ -79,19 +81,18 @@ Module.onRuntimeInitialized = () => {
     Module.HEAPU32.set(jobs, jobsPtr >> 2)
 
     // Allocate memory for the array of elements
-    const elements = Module._malloc(jobs.length * 4);
+    const elements = Module._malloc(jobs.byteLength);
     for (let i = 0; i < jobs.length; i++) {
       elements[i] = Module._malloc(2 * 4);
     }
 
     Module.ccall('assignJobs', null, 
-                ['number', 'number', 'number', 'number'], 
-                [nClusters, jobs.length, jobsPtr, elements]);
+                ['number', 'number', 'number'], 
+                [nClusters, jobs.length, jobsPtr]);
 
     
     const elementsArray = new Int32Array(Module.HEAPU32.buffer, elements, jobs.length);
 
-    console.log(`elementsArray: ${elementsArray}`);
 
     document.getElementById('fin-c').innerHTML = new Date().toLocaleTimeString(); 
     document.getElementById('loader-fin-c').style.display = 'none';
@@ -100,10 +101,9 @@ Module.onRuntimeInitialized = () => {
 
     /* JS implementation */
     let jsStart = new Date();
-    const res = jsSolution(nClusters, jobs.length, jobs)
+    const res = jsSolution(jobs.length, nClusters, jobs)
     let jsEnd = new Date();
     let duracion = (jsEnd - jsStart)/1000;
-    console.log("Total time taken : " + duracion);
 
     // poner tiempos en vista
     document.getElementById('loader-inicio-js').style.display = 'none';
@@ -125,7 +125,7 @@ Module.onRuntimeInitialized = () => {
     document.getElementById('loader-solucion-js').style.display = 'none';
     let solucion_p = document.createElement('p');
     solucion_p.innerHTML = `[T_i, ...] = [${res}]`;
-    console.log('solucion', res);
+    console.log('solucion js:', res);
     document.getElementById('solucion-js').appendChild(solucion_p);
   };
 };
